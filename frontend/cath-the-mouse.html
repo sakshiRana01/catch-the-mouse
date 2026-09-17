@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Catch the mouse</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        #body {
+            min-height: 100vh;
+            background: linear-gradient(135deg, #ea66ba75, #ed2c86);
+            font-family: Arial, sans-serif;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .container {
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .game-intro {
+            width: min(90%, 600px);
+            background-color: white;
+            padding: 45px 40px;
+            border-radius: 20px;
+            text-align: center;
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.2);
+        }
+
+        .game-title {
+            font-size: 42px;
+            color: #ed2c86;
+            margin-bottom: 20px;
+        }
+
+        .game-instructions {
+            font-size: 18px;
+            line-height: 1.6;
+            color: #555;
+            margin-bottom: 30px;
+        }
+
+        .game-instructions label {
+            display: block;
+            font-size: 22px;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        #start {
+            border: none;
+            padding: 14px 30px;
+            border-radius: 10px;
+            background-color: #ed2c86;
+            color: white;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.2s ease;
+        }
+
+        #start:hover {
+            background-color: #a1014c;
+            transform: translateY(-2px);
+        }
+
+        #start:active {
+            transform: translateY(0);
+        }
+
+        #mouse {
+            position: absolute;
+        }
+
+        .attempts-left {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+        }
+    </style>
+</head>
+
+<body id="body">
+    <main class="container">
+        <div class="game-intro">
+            <h1 class="game-title">Catch the mouse</h1>
+            <p class="game-instructions"><label for="mouse">How to Play:</label>you have 2 rounds in the first round you
+                have 5 attempts to catch
+                the mouse,then you move to the second round, in the second round you have three attempts to catch the
+                mouse</p>
+            <button id="start">Start The game</button>
+        </div>
+        <div class="game-start" style="display: none;">
+            <img src="./mouse-img.png" alt="Mouse"
+                style="width: 100px; height: 100px; display: block; margin: 20px auto;" id="mouse" class="mouse">
+        </div>
+        <div class="attempts-left">
+        </div>
+
+    </main>
+</body>
+<script>
+    document.querySelector('#start').addEventListener('click', function (e) {
+        const gameIntro = document.querySelector('.game-intro');
+        gameIntro.style.display = 'none';
+        const gameStart = document.querySelector('.game-start');
+        gameStart.style.display = 'block';
+        let attempts = 5;
+        let clickSuccess = 0;
+        const mouseMovingInterval = function () {
+            const mouse = document.querySelector('#mouse');
+            const randomX = Math.floor(Math.random() * (window.innerWidth - 100));
+            const randomY = Math.floor(Math.random() * (window.innerHeight - 100));
+            mouse.style.left = randomX + 'px';
+            mouse.style.top = randomY + 'px';
+        }
+        const mouseInterval = setInterval(mouseMovingInterval, 3000)
+        const attemptsLeft = document.querySelector('.attempts-left');
+        attemptsLeft.innerHTML = `<p>${attempts} left</p>`;
+        function updateAttemptsDisplay(attempts) {
+            const attemptsLeft = document.querySelector('.attempts-left');
+            attemptsLeft.innerHTML = `<p>${attempts} left</p>`;
+
+
+        }
+        const mouse = document.querySelector('#mouse');
+        mouse.addEventListener('click', function (e) {
+            alert("you click the mouse");
+            e.stopPropagation();
+            clickSuccess++;
+            if (clickSuccess == 5) {
+                console.log("attempts", attempts)
+                clearInterval(mouseInterval);
+                const gameIntro = document.querySelector('.game-intro');
+                gameIntro.style.display = "block";
+                document.querySelector('.game-instructions h1').innerHTML = "kudos! You catch the mouse you won"
+                document.querySelector(".game-instructions").style.display = "none";
+                document.querySelector('#start').style.display = "none";
+                document.querySelector('#start').style.display = "none";
+
+            }
+        })
+        window.addEventListener('click', function (e) {
+            if (e.target.className !== "mouse") {
+                attempts--;
+                updateAttemptsDisplay(attempts);
+                if (attempts == 0) {
+                    console.log("attempts", attempts)
+                    clearInterval(mouseInterval);
+                    const gameIntro = document.querySelector('.game-intro');
+                    gameIntro.style.display = "block";
+                    document.querySelector('.game-intro h1').innerHTML = "oh oh !better luck next time"
+                    document.querySelector(".game-instructions").style.display = "none";
+
+                    document.querySelector('#start').style.display = "none";
+
+                }
+
+            }
+        })
+
+
+
+    })
+
+
+
+
+
+
+</script>
+
+</html>
