@@ -89,6 +89,27 @@
             top: 12px;
             right: 12px;
         }
+     .attempts-left,
+.success-click {
+    position: fixed;
+    right: 20px;
+    padding: 10px 18px;
+    border-radius: 10px;
+    background-color: white;
+    font-size: 18px;
+    font-weight: bold;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+    z-index: 1000;
+}
+
+.attempts-left {
+    top: 20px;
+}
+
+.success-click {
+    top: 75px;
+    display: none;
+}
     </style>
 </head>
 
@@ -108,6 +129,7 @@
         </div>
         <div class="attempts-left">
         </div>
+        <div class="success-click"></div>
 
     </main>
 </body>
@@ -126,20 +148,20 @@
             mouse.style.left = randomX + 'px';
             mouse.style.top = randomY + 'px';
         }
-        const mouseInterval = setInterval(mouseMovingInterval, 3000)
+        const mouseInterval = setInterval(mouseMovingInterval, 800)
         const attemptsLeft = document.querySelector('.attempts-left');
         attemptsLeft.innerHTML = `<p>${attempts} left</p>`;
         function updateAttemptsDisplay(attempts) {
             const attemptsLeft = document.querySelector('.attempts-left');
             attemptsLeft.innerHTML = `<p>${attempts} left</p>`;
 
-
         }
         const mouse = document.querySelector('#mouse');
         mouse.addEventListener('click', function (e) {
-            alert("you click the mouse");
             e.stopPropagation();
             clickSuccess++;
+                 document.querySelector(".success-click").style.display="block";
+                document.querySelector(".success-click").innerHTML= `<p>success click:${clickSuccess} </p>`
             if (clickSuccess == 5) {
                 console.log("attempts", attempts)
                 clearInterval(mouseInterval);
@@ -148,14 +170,16 @@
                 document.querySelector('.game-instructions h1').innerHTML = "kudos! You catch the mouse you won"
                 document.querySelector(".game-instructions").style.display = "none";
                 document.querySelector('#start').style.display = "none";
-                document.querySelector('#start').style.display = "none";
-
+                document.querySelector("#mouse").style.display='none';
+           
             }
+         
         })
         window.addEventListener('click', function (e) {
             if (e.target.className !== "mouse") {
                 attempts--;
-                updateAttemptsDisplay(attempts);
+                if(attempts >=0){
+                updateAttemptsDisplay(attempts);}
                 if (attempts == 0) {
                     console.log("attempts", attempts)
                     clearInterval(mouseInterval);
@@ -165,6 +189,8 @@
                     document.querySelector(".game-instructions").style.display = "none";
 
                     document.querySelector('#start').style.display = "none";
+                                    document.querySelector("#mouse").style.display='none';
+
 
                 }
 
@@ -174,6 +200,8 @@
 
 
     })
+
+
 
 
 
