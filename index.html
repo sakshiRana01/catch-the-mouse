@@ -59,7 +59,8 @@
             margin-bottom: 10px;
         }
 
-        #start {
+        #start,
+        .restart-game {
             border: none;
             padding: 14px 30px;
             border-radius: 10px;
@@ -89,27 +90,35 @@
             top: 12px;
             right: 12px;
         }
-     .attempts-left,
-.success-click {
-    position: fixed;
-    right: 20px;
-    padding: 10px 18px;
-    border-radius: 10px;
-    background-color: white;
-    font-size: 18px;
-    font-weight: bold;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
-    z-index: 1000;
-}
 
-.attempts-left {
-    top: 20px;
-}
+        .attempts-left,
+        .success-click {
+            position: fixed;
+            right: 20px;
+            padding: 10px 18px;
+            border-radius: 10px;
+            background-color: white;
+            font-size: 18px;
+            font-weight: bold;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+            z-index: 1000;
+        }
 
-.success-click {
-    top: 75px;
-    display: none;
-}
+        .attempts-left {
+            top: 20px;
+        }
+
+        .success-click {
+            top: 75px;
+        }
+
+        .game-card {
+            display: none;
+        }
+
+        .game {
+            display: none;
+        }
     </style>
 </head>
 
@@ -117,96 +126,112 @@
     <main class="container">
         <div class="game-intro">
             <h1 class="game-title">Catch the mouse</h1>
-            <p class="game-instructions"><label for="mouse">How to Play:</label>you have 2 rounds in the first round you
-                have 5 attempts to catch
-                the mouse,then you move to the second round, in the second round you have three attempts to catch the
-                mouse</p>
+            <p class="game-instructions"><label for="mouse">How to Play:</label>you have 1 round and
+                5 attempts to catch
+                the mouse if you catch the mouse then you won otherwise better luck next time</p>
             <button id="start">Start The game</button>
         </div>
-        <div class="game-start" style="display: none;">
-            <img src="./mouse-img.png" alt="Mouse"
-                style="width: 100px; height: 100px; display: block; margin: 20px auto;" id="mouse" class="mouse">
+        <div class="game">
+            <div class="game-start">
+                <img src="./mouse-img.png" alt="Mouse"
+                    style="width: 100px; height: 100px; display: block; margin: 20px auto;" id="mouse" class="mouse">
+            </div>
+            <div class="attempts-left">5 left
+            </div>
+            <div class="success-click"></div>
         </div>
-        <div class="attempts-left">
+        <div class="game-card game-intro">
+            <p class="game-status game-instructions"></p>
+            <button class="restart-game">Restart the Games</button>
         </div>
-        <div class="success-click"></div>
 
     </main>
 </body>
 <script>
-    document.querySelector('#start').addEventListener('click', function (e) {
-        const gameIntro = document.querySelector('.game-intro');
-        gameIntro.style.display = 'none';
-        const gameStart = document.querySelector('.game-start');
-        gameStart.style.display = 'block';
-        let attempts = 5;
-        let clickSuccess = 0;
-        const mouseMovingInterval = function () {
-            const mouse = document.querySelector('#mouse');
-            const randomX = Math.floor(Math.random() * (window.innerWidth - 100));
-            const randomY = Math.floor(Math.random() * (window.innerHeight - 100));
-            mouse.style.left = randomX + 'px';
-            mouse.style.top = randomY + 'px';
-        }
-        const mouseInterval = setInterval(mouseMovingInterval, 800)
-        const attemptsLeft = document.querySelector('.attempts-left');
-        attemptsLeft.innerHTML = `<p>${attempts} left</p>`;
-        function updateAttemptsDisplay(attempts) {
-            const attemptsLeft = document.querySelector('.attempts-left');
-            attemptsLeft.innerHTML = `<p>${attempts} left</p>`;
+    const startTheGame = document.querySelector("#start");
+    let attempts = 5, success = 0, mouseMoving;
+    const mouse = document.querySelector('#mouse');
 
-        }
+    const mouseMovingInterval = function () {
         const mouse = document.querySelector('#mouse');
-        mouse.addEventListener('click', function (e) {
-            e.stopPropagation();
-            clickSuccess++;
-                 document.querySelector(".success-click").style.display="block";
-                document.querySelector(".success-click").innerHTML= `<p>success click:${clickSuccess} </p>`
-            if (clickSuccess == 5) {
-                console.log("attempts", attempts)
-                clearInterval(mouseInterval);
-                const gameIntro = document.querySelector('.game-intro');
-                gameIntro.style.display = "block";
-                document.querySelector('.game-instructions h1').innerHTML = "kudos! You catch the mouse you won"
-                document.querySelector(".game-instructions").style.display = "none";
-                document.querySelector('#start').style.display = "none";
-                document.querySelector("#mouse").style.display='none';
-           
-            }
-         
-        })
-        window.addEventListener('click', function (e) {
-            if (e.target.className !== "mouse") {
-                attempts--;
-                if(attempts >=0){
-                updateAttemptsDisplay(attempts);}
-                if (attempts == 0) {
-                    console.log("attempts", attempts)
-                    clearInterval(mouseInterval);
-                    const gameIntro = document.querySelector('.game-intro');
-                    gameIntro.style.display = "block";
-                    document.querySelector('.game-intro h1').innerHTML = "oh oh !better luck next time"
-                    document.querySelector(".game-instructions").style.display = "none";
+        const randomX = Math.floor(Math.random() * (window.innerWidth - 100));
+        const randomY = Math.floor(Math.random() * (window.innerHeight - 100));
+        mouse.style.left = randomX + 'px';
+        mouse.style.top = randomY + 'px';
+    }
 
-                    document.querySelector('#start').style.display = "none";
-                                    document.querySelector("#mouse").style.display='none';
+    const sucessClickUpdate = function (num) {
+        document.querySelector(".success-click").innerHTML = `<p>success click:${num} </p>`
 
+    };
+    function attemptClickUpdate(num) {
+        const attemptsLeft = document.querySelector('.attempts-left');
+        attemptsLeft.innerHTML = `<p>${num} left</p>`;
+    }
 
-                }
+    function reStartTheGame(status) {
 
-            }
-        })
+        const message = document.querySelector('.game-status');
+        const gameCard = document.querySelector('.game-card');
+        const game = document.querySelector('.game');
+        gameCard.style.display = "block"
+        game.style.display = 'none'
+        clearInterval(mouseMoving)
+        if (status == "won") {
 
+            message.innerHTML = "KUDOS! you won the game"
+        }
+        else {
+            message.innerHTML = "Better Luck Next time!"
+        }
 
+    }
 
+    document.querySelector('.restart-game').addEventListener('click', function (e) {
+        e.stopPropagation();
+        attempts = 5, success = 0;
+        attemptClickUpdate(attempts);
+        sucessClickUpdate(success);
+        clearInterval(mouseMoving)
+        const gameIntro = document.querySelector('.game-intro');
+        const game = document.querySelector('.game');
+        gameIntro.style.display = 'block';
+        game.style.display = 'none'
+        const gameCard = document.querySelector('.game-card');
+        gameCard.style.display = "none"
     })
 
+    startTheGame.addEventListener('click', function (e) {
+        e.stopPropagation();
+        const gameIntro = document.querySelector('.game-intro');
+        const game = document.querySelector('.game');
+        gameIntro.style.display = 'none';
+        game.style.display = 'block'
+        mouseMoving = setInterval(mouseMovingInterval, 2000)
+        mouse.addEventListener('click', function (e) {
+            e.stopPropagation()
+            success++;
+                sucessClickUpdate(success)
+            if (success == 5) {
+                reStartTheGame("won")
+            }
+          
 
-
-
-
-
-
+        })
+        window.addEventListener('click', function (e) {
+            console.log("e.target.className", e)
+            if (attempts == 0) {
+                reStartTheGame("lost")
+            }
+            else {
+                if (e.target.className !== "mouse") {
+                    console.log("in the if")
+                    attempts--;
+                    attemptClickUpdate(attempts)
+                }
+            }
+        })
+    })
 
 </script>
 
