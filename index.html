@@ -200,7 +200,29 @@
         const gameCard = document.querySelector('.game-card');
         gameCard.style.display = "none"
     })
+  mouse.addEventListener('click', function (e) {
+            e.stopPropagation()
+            success++;
+            sucessClickUpdate(success)
+            if (success == 5) {
+                reStartTheGame("won")
+            }
+          
 
+        })
+        console.log(attempts);
+        
+        window.addEventListener('click', function (e) {
+           if (e.target.className !== "mouse") {
+                    console.log("in the if")
+                    attempts--;
+                    attemptClickUpdate(attempts)
+                }
+            if (attempts == 0) {
+                reStartTheGame("lost")
+            }
+           
+        })
     startTheGame.addEventListener('click', function (e) {
         e.stopPropagation();
         const gameIntro = document.querySelector('.game-intro');
@@ -208,29 +230,7 @@
         gameIntro.style.display = 'none';
         game.style.display = 'block'
         mouseMoving = setInterval(mouseMovingInterval, 700)
-        mouse.addEventListener('click', function (e) {
-            e.stopPropagation()
-            success++;
-                sucessClickUpdate(success)
-            if (success == 5) {
-                reStartTheGame("won")
-            }
-          
-
-        })
-        window.addEventListener('click', function (e) {
-            console.log("e.target.className", e)
-            if (attempts == 0) {
-                reStartTheGame("lost")
-            }
-            else {
-                if (e.target.className !== "mouse") {
-                    console.log("in the if")
-                    attempts--;
-                    attemptClickUpdate(attempts)
-                }
-            }
-        })
+      
     })
 
 </script>
